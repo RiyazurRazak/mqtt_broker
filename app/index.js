@@ -1,37 +1,43 @@
 // package from connect with mqtt protocol
 const mqtt = require("mqtt");
 
-// demo broker address
-const URI = "mqtt://192.168.132.74:9000";
+const os = require("os");
+const dns = require("dns");
 
-// connect with mqtt broker
-const client = mqtt.connect(URI);
+// find your machine ip address and run the server
+dns.lookup(os.hostname(), async (err, address, family) => {
+  // demo broker address
+  const URI = `mqtt://${address}:9000`;
 
-// subcribe to topics when connection is successfully
-client.on("connect", () => {
-  // subcribe to open-valve topic
-  client.subscribe("open-valve");
-  console.log("Connection With Broker Successfully");
-});
+  // connect with mqtt broker
+  const client = mqtt.connect(URI);
 
-// log if the connection was not successfull
-client.on("error", () => {
-  console.error("Error, Broker Not Connected");
-  // close the connection
-  client.end();
-});
+  // subcribe to topics when connection is successfully
+  client.on("connect", () => {
+    // subcribe to open-valve topic
+    client.subscribe("open-valve");
+    console.log(`Connection With Broker : mqtt://${address}:9000 Successfully`);
+  });
 
-// mock sensor data send to subscibers with the topic : random-number every 5 seconds
-setInterval(() => {
-  // generate a random number between 0 - 99
-  const randomNumber = parseInt(Math.random() * 100).toString();
+  // log if the connection was not successfull
+  client.on("error", () => {
+    console.error("Error, Broker Not Connected");
+    // close the connection
+    client.end();
+  });
 
-  // publish the mock data
-  client.publish("random-number", randomNumber);
-  console.log("Mesaage published to subscribers");
-}, 5000);
+  // mock sensor data send to subscibers with the topic : random-number every 5 seconds
+  setInterval(() => {
+    // generate a random number between 0 - 99
+    const randomNumber = parseInt(Math.random() * 100).toString();
 
-// recieve messages for the subscibe topics.
-client.on("message", (topic, message) => {
-  console.log(`Message from topic : ${topic} = ${message.toString()}`);
+    // publish the mock data
+    client.publish("random-number", randomNumber);
+    console.log("Mesaage published to subscribers");
+  }, 5000);
+
+  // recieve messages for the subscibe topics.
+  client.on("message", (topic, message) => {
+    console.log(`Message from topic : ${topic} = ${message.toString()}`);
+  });
 });
