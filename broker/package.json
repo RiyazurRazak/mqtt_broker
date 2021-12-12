@@ -1,0 +1,15 @@
+{
+  "name": "broker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "riyazur razak",
+  "license": "ISC",
+  "dependencies": {
+    "aedes": "^0.46.2"
+  }
+}
